@@ -1,0 +1,5 @@
+# Source export contains staff names + email addresses — keep out of this public Pages repo
+*.csv
+parent_titles.json
+*.tmp
+refresh.log
