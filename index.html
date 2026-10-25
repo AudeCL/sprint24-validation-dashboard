@@ -67,41 +67,21 @@
             font-size: 0.72em;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: var(--rc-red);
             font-weight: 700;
         }
-        .header-countdown .countdown-items {
-            display: flex;
-            gap: 22px;
-        }
-        .header-countdown .countdown-item {
-            padding: 2px 0;
-        }
-        .header-countdown .countdown-item + .countdown-item {
-            border-left: 1px solid #f0dede;
-            padding-left: 22px;
-        }
-        .header-countdown .countdown-item-label {
-            font-size: 0.74em;
-            font-weight: 700;
-            color: var(--rc-gray);
-            margin-bottom: 3px;
-        }
         .header-countdown .countdown-timer {
-            font-size: 1.55em;
+            font-size: 2.1em;
             font-weight: 700;
             color: var(--rc-black);
             line-height: 1.1;
             font-variant-numeric: tabular-nums;
         }
         .header-countdown .countdown-subtitle {
-            font-size: 0.76em;
-            margin-top: 4px;
+            font-size: 0.78em;
+            margin-top: 6px;
             color: var(--rc-muted);
-        }
-        .header-countdown .countdown-item.urgent .countdown-timer {
-            color: var(--rc-red);
         }
         .header-countdown.urgent {
             background: linear-gradient(135deg, #fdecec 0%, #fbdaddff 100%);
@@ -773,13 +753,8 @@
                 <div class="countdown-icon">⏰</div>
                 <div class="countdown-body">
                     <div class="countdown-label">VALIDATION DEADLINE</div>
-                    <div class="countdown-items">
-                        <div class="countdown-item" id="countdown-us">
-                            <div class="countdown-item-label">User Story Validations</div>
-                            <div class="countdown-timer" id="countdown-timer-us">--:--:--</div>
-                            <div class="countdown-subtitle">Nov 17, 6:00 PM CET</div>
-                        </div>
-                    </div>
+                    <div class="countdown-timer" id="countdown-timer">--:--:--</div>
+                    <div class="countdown-subtitle">Nov 17, 6:00 PM CET</div>
                 </div>
             </div>
         </div>
@@ -907,51 +882,43 @@
     <script>
         document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
 
-        // Countdown Timer — user story validation deadline
-        const countdownDeadlines = [
-            { itemId: 'countdown-us', timerId: 'countdown-timer-us', target: new Date('2026-11-17T18:00:00+01:00') }
-        ];
-
+        // Countdown Timer
         function updateCountdown() {
+            // Target: November 17, 2026, 6:00 PM CET (UTC+1)
+            const targetDate = new Date('2026-11-17T18:00:00+01:00');
             const now = new Date();
-            let anyUrgent = false;
+            const diff = targetDate - now;
 
-            countdownDeadlines.forEach(function (d) {
-                const item = document.getElementById(d.itemId);
-                const timer = document.getElementById(d.timerId);
-                const diff = d.target - now;
+            const countdownBox = document.getElementById('countdown-box');
+            const countdownTimer = document.getElementById('countdown-timer');
 
-                if (diff <= 0) {
-                    timer.textContent = 'DEADLINE PASSED';
-                    item.classList.add('urgent');
-                    anyUrgent = true;
-                    return;
-                }
+            if (diff <= 0) {
+                countdownTimer.textContent = 'DEADLINE PASSED';
+                countdownBox.classList.add('urgent');
+                return;
+            }
 
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-                if (days > 0) {
-                    timer.textContent = days + 'd ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
-                } else if (hours > 0) {
-                    timer.textContent = hours + 'h ' + minutes + 'm ' + seconds + 's';
-                } else {
-                    timer.textContent = minutes + 'm ' + seconds + 's';
-                }
+            // Format countdown display
+            if (days > 0) {
+                countdownTimer.textContent = days + 'd ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
+            } else if (hours > 0) {
+                countdownTimer.textContent = hours + 'h ' + minutes + 'm ' + seconds + 's';
+            } else {
+                countdownTimer.textContent = minutes + 'm ' + seconds + 's';
+            }
 
-                // Highlight this deadline if less than 24 hours remain
-                if (days === 0 && hours < 24) {
-                    item.classList.add('urgent');
-                    anyUrgent = true;
-                }
-            });
-
-            document.getElementById('countdown-box').classList.toggle('urgent', anyUrgent);
+            // Add urgent styling if less than 24 hours
+            if (days === 0 && hours < 24) {
+                countdownBox.classList.add('urgent');
+            }
         }
 
-        // Update countdowns every second
+        // Update countdown every second
         updateCountdown();
         setInterval(updateCountdown, 1000);
 
